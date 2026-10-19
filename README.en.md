@@ -1,8 +1,8 @@
-# LD 플레이어 모바일 게임전용 딥 강화학습 AI
+# LDPlayer Mobile Game Deep Reinforcement Learning AI
 
-**LDPlayer Mobile Game Deep Reinforcement Learning AI · v0.26**
+**v0.26 · LD 플레이어 모바일 게임전용 딥 강화학습 AI**
 
-[한국어 문서](README.md) · [Algorithm analysis](docs/ALGORITHMS.md) · [Validation and results](docs/RESULTS.md)
+[한국어](README.md#한국어) · [Algorithm analysis](docs/ALGORITHMS.md) · [Validation and results](docs/RESULTS.md)
 
 A local Windows deep reinforcement learning project that observes an LDPlayer game through screenshots and OCR, executes verified game skills, and updates its policy from observed outcomes. The current game adapter targets **Million Lords**, including attack selection, troop assembly, defensive reinforcement, and investment review. Training and inference run on the CPU without an external AI API key or GPU.
 
