@@ -1,0 +1,17 @@
+{
+  "seconds": 182.28924189999816,
+  "captures": 55,
+  "counts": {
+    "upgrades": 0,
+    "scouts": 0,
+    "attacks": 0,
+    "conquests": 0,
+    "recruit_claims": 0,
+    "transfers": 0,
+    "supports": 0,
+    "defenses": 0,
+    "explorations": 3,
+    "exploration_commands": 3
+  },
+  "provenance": "Archived v0.26 bounded live run; raw logs and account identifiers excluded; not current state."
+}

@@ -1,0 +1,265 @@
+{
+  "version": "0.26",
+  "files": {
+    "live_lords/__init__.py": {
+      "bytes": 83,
+      "sha256": "6cc537b1b7188c29dc502c32abcd2102e9195bb01f836747cb5525e700eb2638"
+    },
+    "live_lords/__main__.py": {
+      "bytes": 29,
+      "sha256": "0ba4c6fe1dc77ad5e595e96efde4d7e256b1dabbfba543be7258dfa4fb2c62c8"
+    },
+    "live_lords/activity.py": {
+      "bytes": 22866,
+      "sha256": "a46766c2a93d76b264f773e03e3812751e959cef4b1ff410e183605f57c5cd92"
+    },
+    "live_lords/adaptive.py": {
+      "bytes": 11468,
+      "sha256": "374f9b67f428d1ae405e90ff2edb4e4186206c73b591036513c515072cd19758"
+    },
+    "live_lords/app.py": {
+      "bytes": 24403,
+      "sha256": "2b228d7b1f6b379de4abd28e4a4602ccadedc21b1839b7c67125978438891a5c"
+    },
+    "live_lords/assets/attack.png": {
+      "bytes": 3294,
+      "sha256": "1de55548830fd5b8f6595e271ad91f1e9783a1fe132ebe7159bbc0d9af68ba01"
+    },
+    "live_lords/assets/city_details_defense.png": {
+      "bytes": 5762,
+      "sha256": "750bc43cfd4cba2baa240250ab8198b5d46b4af5c9e9f4f15855d81962c00fce"
+    },
+    "live_lords/assets/city_details_stats.png": {
+      "bytes": 4001,
+      "sha256": "98e45185d673956f5e39904de3632c48736f381f8a06910e6c1525de311845a4"
+    },
+    "live_lords/assets/city_info.png": {
+      "bytes": 3722,
+      "sha256": "8f312dc8694c65ffbc54edf3d1773deaca8f6157b8e83923e4828458db0b990f"
+    },
+    "live_lords/assets/city_list_home.png": {
+      "bytes": 2169,
+      "sha256": "8aebe806f306218e62e808fe369895668f10b045ee5e9cf2dc58cf8cc3bc1ec1"
+    },
+    "live_lords/assets/city_list_pin.png": {
+      "bytes": 1972,
+      "sha256": "a41497318c5a790c058823555f3154ff196a50077f2e5063faf28c5dae1a4c64"
+    },
+    "live_lords/assets/city_list_title.png": {
+      "bytes": 4557,
+      "sha256": "d2a2e84368328c746a8ac090e4f732bd241f9ad23516594d8dc11f8688ded81b"
+    },
+    "live_lords/assets/enemy_profile_info.png": {
+      "bytes": 7214,
+      "sha256": "25f675b7f5d10d6bd554bda1bafcfb4ea440846c873814bddafd8038b73c8dad"
+    },
+    "live_lords/assets/enemy_profile_kingdom.png": {
+      "bytes": 2801,
+      "sha256": "13b2ae7473efe373db113bbd1b309628626a1c00c8b70e1f6ede48cbee514c9c"
+    },
+    "live_lords/assets/hud_gold_g.png": {
+      "bytes": 624,
+      "sha256": "5e5273e419393ef241d619e890d13fb25889f34cdf335250a806b6a351db80c7"
+    },
+    "live_lords/assets/loss_warning.png": {
+      "bytes": 2129,
+      "sha256": "0a5693b34d5481d760f1e813bd00d6f985ebc9fa2ce8d07532ab3a3521aa2ac0"
+    },
+    "live_lords/assets/map_home.png": {
+      "bytes": 8545,
+      "sha256": "c7db421df82a7b69407e23bd121640f2f75b675cab81f9829af6444956974718"
+    },
+    "live_lords/assets/march_button.png": {
+      "bytes": 4620,
+      "sha256": "96a96cb32a577784d3c2056ac689933477477682d9c7eaacba1446a7344402d8"
+    },
+    "live_lords/assets/march_defense_button.png": {
+      "bytes": 4321,
+      "sha256": "06aa493e735e542c008bf455d60f9ed24f739574992abe464594fe5986570371"
+    },
+    "live_lords/assets/march_mixed_button.png": {
+      "bytes": 5608,
+      "sha256": "c13706d00d61987170cb62011a19632d90ecd5efdff17796a084386db2c26102"
+    },
+    "live_lords/assets/march_pin.png": {
+      "bytes": 1897,
+      "sha256": "1dc056f66d4cbdfdd7182057b02acd06a14cad67ca2de4c7b045cf6dabbfa551"
+    },
+    "live_lords/assets/march_sort.png": {
+      "bytes": 3281,
+      "sha256": "b07407cb3f0e9638fc3c28620faf97fc456e813478ba471b5dfef8e8d87a883e"
+    },
+    "live_lords/assets/march_title_move.png": {
+      "bytes": 2832,
+      "sha256": "9f64a3347fd714ad30cc92135196dd6e9635173662770b27f55d16c3b526385c"
+    },
+    "live_lords/assets/move_troops.png": {
+      "bytes": 3025,
+      "sha256": "70ef1b6f735f28b1efa132b9a6fdedb9d4a45ea4c0a61f5dcfb4df2863c4578f"
+    },
+    "live_lords/assets/move_troops_city88.png": {
+      "bytes": 2980,
+      "sha256": "cbc175e0ffdb89b2cad1d8e9c549a5255b645ae6a1d383e538449f30f788c200"
+    },
+    "live_lords/assets/multi_scout.png": {
+      "bytes": 4098,
+      "sha256": "67dcdfb5c06878f4bf6bdc996bbd9a4716e25d67b0aa1017c42118c3a919dac1"
+    },
+    "live_lords/assets/operation_confirm.png": {
+      "bytes": 4306,
+      "sha256": "8b7afea3137a365aeebd150ca613e967fb1091224e31b64c25ce38a05b706808"
+    },
+    "live_lords/assets/own_city_crown.png": {
+      "bytes": 1458,
+      "sha256": "b5c0c23cb92f1a474239d008bb645a1009b5256632129898558d910d06fc9782"
+    },
+    "live_lords/assets/own_city_total.png": {
+      "bytes": 4850,
+      "sha256": "2d38c1757783fd95bd9c95c0a4a3a91db52512aa81ede7b4b1c12af3a01640c1"
+    },
+    "live_lords/assets/own_flag.png": {
+      "bytes": 1511,
+      "sha256": "11ce747ac1d20d5ccafc0671899587f72b38a1722e3dc29bad806b8c23f0344b"
+    },
+    "live_lords/assets/panel_guild_members.png": {
+      "bytes": 2128,
+      "sha256": "d17184e78c893768da829a19a893b09f37ae69e3d3b8596865ae6b7ea00941af"
+    },
+    "live_lords/assets/panel_guild_points.png": {
+      "bytes": 4773,
+      "sha256": "a8874da19dbd3274c378ac23ca062dd5b9bc55202ee776ae7968df715018e026"
+    },
+    "live_lords/assets/panel_harvester.png": {
+      "bytes": 4293,
+      "sha256": "22f7c9a16957bf18d8f2eac60455dfe8307da51030ed99ea2b599b9fd1e1dcc7"
+    },
+    "live_lords/assets/panel_news.png": {
+      "bytes": 5352,
+      "sha256": "0b39aa09e5d62f1fa8fafd4030f6a3159e010339a034774dd40643187782e946"
+    },
+    "live_lords/assets/panel_settings.png": {
+      "bytes": 3261,
+      "sha256": "4cdcb506184e03c9902442c8d21a660152414ccee4a3c8db7d6b0ed71f0abfd2"
+    },
+    "live_lords/assets/panel_shop_back.png": {
+      "bytes": 1947,
+      "sha256": "c587b0a66975efccf186c4267f384e1d3de3fa832ae1dadc97e35a6f88d97e51"
+    },
+    "live_lords/assets/receive.png": {
+      "bytes": 2656,
+      "sha256": "fd85bf945f0f92dbd19cd57ae3f6846d19d6b5a8731d4ecddb77fd326097f8d5"
+    },
+    "live_lords/assets/regroup.png": {
+      "bytes": 4193,
+      "sha256": "91c0bfff1cd7e51b5e87bfa4c23156dad4bde6dd04f40a6668d6b36c871a4042"
+    },
+    "live_lords/assets/report.png": {
+      "bytes": 2779,
+      "sha256": "1aa3472a9d90de2657bd80cd8da83d05d87689ae48164996a67a099a10e67b12"
+    },
+    "live_lords/assets/scout.png": {
+      "bytes": 2695,
+      "sha256": "a78cb1ba9e707e34fb0bdeea3dc5eec57493c513661019c89a1f00fd004ffe75"
+    },
+    "live_lords/assets/send_attack.png": {
+      "bytes": 3258,
+      "sha256": "c9583e9f55aedc78668ac6fb5a1be3623a212dc0e0700ca9a937918d9f96e41b"
+    },
+    "live_lords/assets/send_transfer.png": {
+      "bytes": 2738,
+      "sha256": "409028e7ad90a52f23802e7317b3b83a8c33d72da8bd5c0b5d9eca103042a442"
+    },
+    "live_lords/assets/stat_attack.png": {
+      "bytes": 1677,
+      "sha256": "9ab426c2b909290aeaee7931fc98ff727055a8df327224ff8763eadb1e71da07"
+    },
+    "live_lords/assets/stat_defense.png": {
+      "bytes": 1298,
+      "sha256": "fdde945a1470bda26e74ee3cc173acb7f31aab018f62681160d8e166b62b8ada"
+    },
+    "live_lords/assets/transfer_toggle_off.png": {
+      "bytes": 1198,
+      "sha256": "1008038650c3a32632992cab84487df8b0684fdd465bc095b184a0e71eb332d5"
+    },
+    "live_lords/assets/upgrade.png": {
+      "bytes": 2856,
+      "sha256": "3ca4c93b404363ee5985ceaa74ec84852f9fdca9c1f4c2ca58a0a60575e320cb"
+    },
+    "live_lords/batch.py": {
+      "bytes": 31067,
+      "sha256": "e0174b6f31912f1e7e09d818c1b92651f29794913e4d74bd3c7df21e4778beb6"
+    },
+    "live_lords/deep_rl.py": {
+      "bytes": 20483,
+      "sha256": "58d289ffce4585fa90651b091e8ba1e4b456e05612b08d25303c03b2cff7e169"
+    },
+    "live_lords/defense.py": {
+      "bytes": 42460,
+      "sha256": "96595783eb81387427c94802a5c9420008e5d25db3ff1050528e75dc08cbbdad"
+    },
+    "live_lords/driver.py": {
+      "bytes": 13230,
+      "sha256": "e96e17f38ad9363551af0e67a5c04923c35383a2b0b2c512b33123ccfc1b9397"
+    },
+    "live_lords/exclusions.py": {
+      "bytes": 2019,
+      "sha256": "9a8279a2cd132cf8739e035f960453aa0112f81edc87d4660347205b557a4247"
+    },
+    "live_lords/exploration.py": {
+      "bytes": 4191,
+      "sha256": "790bbdb062c88342dffd25b16eb2576871e103efb03649c40884a0f11a2e91ca"
+    },
+    "live_lords/focus_defense.py": {
+      "bytes": 8843,
+      "sha256": "f06f769435c0119fdc94d0053f0aacf628a0935c671b2d633522b412d3ba1b47"
+    },
+    "live_lords/learning.py": {
+      "bytes": 2371,
+      "sha256": "edbb4d08bf9ea5a9e62709a142c5a8227e5fa3caee149527b728c2d463d5cbc3"
+    },
+    "live_lords/muster.py": {
+      "bytes": 40717,
+      "sha256": "81166384007c2ce919ab43e7bb7ac1ce9c13feb1f9c28d113cacb050201172a0"
+    },
+    "live_lords/ocr.ps1": {
+      "bytes": 3678,
+      "sha256": "f3b00089d8e2b88423f30aed15660fdf131941699ed4f1d71242b34e6df1033b"
+    },
+    "live_lords/outcomes.py": {
+      "bytes": 13910,
+      "sha256": "a71b5b82f4f04f6552967e65d5b906fcdd74b670d2a42d39f9f5ae4bc0425b91"
+    },
+    "live_lords/planner.py": {
+      "bytes": 6410,
+      "sha256": "88cef46865631627d1240546190b74f2ebb765e41dbf494c0f70aef3cef1d055"
+    },
+    "live_lords/probe.py": {
+      "bytes": 1024,
+      "sha256": "ed73ce4c6e6aaf07d173c1cfc79263d2f1cb3459365eb26669f762c636f96782"
+    },
+    "live_lords/recovery.py": {
+      "bytes": 7114,
+      "sha256": "58c877f67e72d425c301136935c1438e2e2d048a349860c8e49638015be6649e"
+    },
+    "live_lords/reinforcement.py": {
+      "bytes": 5994,
+      "sha256": "05217ac127738d9faf41fd1a2a53a74d7ff419941764476aa8529e07b7917d5f"
+    },
+    "live_lords/runner.py": {
+      "bytes": 41157,
+      "sha256": "1b7efb99a245cb13c668d2765fc00ef80fde1d6f8e71ff50415665f70b9021b7"
+    },
+    "live_lords/strategy.py": {
+      "bytes": 6416,
+      "sha256": "9f33eda71d32722ded306ab248b708ff6e191c6bfdf9e35df82876ed136ed441"
+    },
+    "live_lords/targets.py": {
+      "bytes": 3410,
+      "sha256": "fc2201f7955c03b0b1bbc994fcfb3f67dc3e4cac08b7d31b778e8095666cabeb"
+    },
+    "live_lords/vision.py": {
+      "bytes": 47849,
+      "sha256": "97fac07e239e81f29f008a182f5f73460651cc6bbf96704ba06f052c501e3c93"
+    }
+  }
+}

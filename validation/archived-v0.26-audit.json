@@ -1,0 +1,35 @@
+{
+  "provenance": "Archived v0.26 installation audit; not current live state. Private path and instance identifier removed.",
+  "reinforcement": {
+    "algorithm": "Visual hierarchical Double DQN + prioritized replay",
+    "mode": "train",
+    "gradient_updates": 2,
+    "transitions": 9,
+    "combat_episodes": 0,
+    "sources": {
+      "navigation": 10
+    },
+    "lifetime_updates": 2,
+    "epsilon": 0.07952143712431482,
+    "loss": 0.15837283432483673,
+    "td_error": 0.6224150061607361,
+    "rebuilds": 0,
+    "checkpoint_error": null,
+    "performance": {
+      "recent": {
+        "battles": 0,
+        "win_rate": null,
+        "mean_reward": null
+      },
+      "previous": {
+        "battles": 0,
+        "win_rate": null,
+        "mean_reward": null
+      }
+    },
+    "phase": "학습 중"
+  },
+  "saved_gradient_updates": 1,
+  "saved_weights_changed": true,
+  "interpretation": "Weight updates and persistence observed; zero combat episodes linked to the new neural policy in this snapshot."
+}

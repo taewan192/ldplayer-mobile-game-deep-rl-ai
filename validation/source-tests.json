@@ -1,0 +1,14 @@
+{
+  "date_kst": "2026-10-19",
+  "command": "python -m unittest discover -s tests -v",
+  "scope": "Exported live-controller source; separate Arena simulator excluded. No live emulator actions.",
+  "tests": 328,
+  "failures": 0,
+  "errors": 0,
+  "duration_seconds": 23.061,
+  "exit_code": 0,
+  "python": "3.14.2",
+  "numpy": "2.5.4",
+  "opencv": "5.0.0",
+  "pillow": "12.3.0"
+}

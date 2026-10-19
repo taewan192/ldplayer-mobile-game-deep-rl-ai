@@ -1,0 +1,4 @@
+# Versions used to validate the Windows v0.26 CPU build.
+numpy==2.5.4
+opencv-python-headless==5.0.0.93
+Pillow==12.3.0
