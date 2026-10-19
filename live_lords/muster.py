@@ -396,8 +396,11 @@ class MusterMixin:
             self.back(); return None
         # The destination-selection screen can settle after the source camera pan.
         rebase()
+        if mission.get('strict_destination') and navigate_destination:
+            if not navigate_destination():self.back();return None
+            rebase()
         visible=[]
-        if navigate_destination:
+        if navigate_destination and not mission.get('strict_destination'):
             visible=[pos for pos,_ in self.vision.own_sources(self.image,self.state.get('owner'))
                 if self.world_position(pos) and math.dist(pos,donor['position'])>110]
         # Prefer actual visible blue castles. Perspective can put the saved

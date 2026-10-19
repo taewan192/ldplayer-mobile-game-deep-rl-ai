@@ -1,12 +1,23 @@
 # LDPlayer Mobile Game Deep Reinforcement Learning AI
 
-**v0.26 · LD 플레이어 모바일 게임전용 딥 강화학습 AI**
+**v0.27 · LD 플레이어 모바일 게임전용 딥 강화학습 AI**
 
 [한국어](README.md#한국어) · [Algorithm analysis](docs/ALGORITHMS.md) · [Validation and results](docs/RESULTS.md)
 
 A local Windows deep reinforcement learning project that observes an LDPlayer game through screenshots and OCR, executes verified game skills, and updates its policy from observed outcomes. The current game adapter targets **Million Lords**, including attack selection, troop assembly, defensive reinforcement, and investment review. Training and inference run on the CPU without an external AI API key or GPU.
 
 **Status:** an experimental learning system. A neural policy learns to choose among hand-written, validated skills. It does not discover every game mechanic from scratch or work with arbitrary mobile games without a new adapter. Working training code is not evidence of strong live-game performance.
+
+## v0.27 defense update
+
+- Read blue support-selection bubbles and dark timer text; fix a bubble border being mistaken for a leading digit. The captured failure case now reads **56.4M troops / 27 seconds**.
+- Read the own-city list in troop order, verify donor identity and reserves, and group incoming attacks into separate 30-second arrival windows. A later wave no longer inflates the first deadline's troop goal.
+- Register observed map views before navigating between distant cities. An unconnected route is deferred rather than dispatched using stale coordinates.
+- Count support as dispatched only after an outgoing march matches destination, troop quantity, and countdown. A button click or return to the map is insufficient.
+- Add optional idle prepositioning for nearby priority cities and guarded free/owned-item march acceleration. Both controls are available in the UI. Acceleration requires readable controls and an observed countdown reduction before it is counted as effective; it does not purchase items.
+- Fix defense preemption escaping the recovery handler and stopping the controller. Refresh target troops without requiring unrelated wall/guardian OCR in troop-only focus defense.
+
+**Observed:** one real prepositioning transfer of **972M troops** was confirmed in the outgoing march list. **Not established:** a successful defensive battle, a successful live speedup effect, or working routes to every distant city. Prepositioning is not a combat victory or a combat-learning episode. The Double DQN learning architecture remains unchanged; these changes improve observation, logistics, and execution verification. See [validation evidence](docs/RESULTS.md).
 
 ## Implemented capabilities
 
@@ -126,7 +137,7 @@ The policy network, replay system, and checkpoint format can be reused. Observat
 | `reinforcement.py` | Live observations and hierarchical policy scheduling |
 | `outcomes.py`, `learning.py` | Verified rewards, SQLite history, and retained legacy bandit components |
 | `muster.py`, `batch.py` | Troop assembly and multi-scout execution paths |
-| `defense.py`, `focus_defense.py` | Support, investment conditions, and defensive priorities |
+| `defense.py`, `focus_defense.py`, `defense_logistics.py` | Support, investment conditions, and defensive priorities |
 | `exploration.py`, `recovery.py` | Persisted exploration and game/bridge recovery |
 | `tests/` | Algorithm, workflow, and screen-regression tests |
 

@@ -1,8 +1,8 @@
 # 알고리즘 상세 및 분석 / Algorithm details and analysis
 
-이 문서는 v0.26 소스의 실제 구현을 설명합니다. 논문의 성능을 이 프로젝트의 성능으로 인용하지 않습니다.
+이 문서는 v0.27 소스의 실제 구현을 설명합니다. 논문의 성능을 이 프로젝트의 성능으로 인용하지 않습니다.
 
-This document describes the implementation in v0.26. Performance reported in the cited papers is not presented as performance achieved by this project.
+This document describes the implementation in v0.27. Performance reported in the cited papers is not presented as performance achieved by this project.
 
 ## 1. 관측과 행동 표현 / Observation and action representation
 
@@ -178,3 +178,28 @@ Useful next experiments include a frozen-policy baseline comparison, separate at
 공격 계산기의 `+500%`는 기본값을 더한 `troops × (1 + 500/100)`으로 해석합니다. 예를 들어 400G는 2.4T가 됩니다. 방어 집중 모드는 상대의 숨은 공격 보너스를 추측하지 않고 병력 구간과 여유 배율에 근거한 별도 규칙을 사용합니다. 이는 관측한 모든 게임 규칙을 신경망이 자동 발견했다는 의미가 아닙니다.
 
 The attack calculator interprets a +500% bonus as a 6× multiplier, giving 2.4T for 400G troops. Focus defense instead uses incoming troop-range heuristics and reserve margins without inferring hidden enemy attack bonuses. These are adapter assumptions and rules, not mechanics autonomously discovered by the neural model.
+
+
+## 12. v0.27 방어 수송 및 검증 / Defense logistics and verification
+
+이 업데이트는 Double DQN, 보상식, 경험 재학습을 다른 알고리즘으로 교체하지 않습니다. `defense_logistics.py`의 관측·실행 제약은 사람이 작성한 규칙입니다. 잘못 읽은 수치나 확인되지 않은 전송을 성공 경험으로 연결하지 않도록 실행 근거를 보강합니다.
+
+This update does not replace Double DQN, replay, or reward design. The logistics constraints in `defense_logistics.py` are engineered. They improve the evidence available to execution and subsequent outcome matching; they are not newly learned game mechanics.
+
+| 규칙 / Rule | 근거와 동작 / Rationale and behavior |
+| --- | --- |
+| Arrival waves | 첫 행군 도착부터 30초 이내만 한 묶음으로 처리하며, 연쇄적으로 창을 늘리지 않습니다. / Anchor each wave to its first arrival; do not transitively merge later attacks into the earliest deadline. |
+| Troop-ordered inventory | 병력순 도시 목록의 최대 2페이지와 현재 보이는 지원 후보를 검토합니다. 메인 성 고정 행을 최대 병력으로 오인하지 않습니다. / Read up to two troop-sorted list pages and visible donors; the pinned main-city row is not assumed largest. |
+| Donor reserves | Lv.110–115 또는 레벨 불명 성에는 90%, 일반 성에는 30%를 남기며 게임의 10% 슬라이더 단위로 내림합니다. / Retain 90% in priority or unknown-level cities and 30% in ordinary cities, rounding donations down to slider increments. |
+| Threatened donors | 최신의 완전한 피격 정보로 자기 방어 목표와 기본 잔류량을 충족할 때만 초과 병력을 검토합니다. / A threatened donor may supply only verified surplus after its own troop-based defense goal and reserve; stale or unknown threats exclude it. |
+| Map registration | 실제 관측한 지도 변환을 최대 3개 연결해 경로를 확인합니다. 연결이 없으면 출병을 보류합니다. / Compose at most three validated transforms between observed views; unknown remote routes are deferred. |
+| Dispatch acknowledgement | 목적지·수량·도착 시간을 출발 행군과 대조합니다. 불확실한 의도는 중복 방지용이며 확보 병력으로 세지 않습니다. / Match destination, amount and ETA in outgoing marches; uncertain intents prevent duplicates but do not count as secured support. |
+| Garrison refresh | 새 주둔 병력 관측에 이미 포함된 지원을 다시 더하지 않습니다. / Do not double-count arrived support already included in a fresh garrison observation. |
+| Speedup evidence | 무료 가속을 우선 확인하고, 보유 아이템은 수량·사용 버튼·적용 후 시간 조건을 확인합니다. 무료 가속은 경과 시간을 넘는 단축을 검증하며, 보유 아이템 경로는 사용 뒤 더 짧은 카운트다운을 확인합니다. / Prefer free boosts; guard owned-item use with readable controls, quantity and projected ETA. The free path checks reduction beyond elapsed wall time; the owned-item path checks for a shorter countdown after use. |
+| Late-route feasibility | 과거 실제 측정한 무료 가속 비율이 있을 때만 가속을 전제로 기한을 계산합니다. / Assume a boost in feasibility calculations only when its free-boost ratio was previously measured; never invent one. |
+| Idle prepositioning | 현재 위협·진행 작업이 없을 때 300초 간격으로 알려진 핵심 성의 부족 병력을 검토합니다. / With no active threat or busy job, periodically review nearby priority-city garrisons, subject to conservative transfer and travel limits. |
+| Outcome separation | 사전 배치와 출발 확인은 전투 승리가 아닙니다. / A prepositioning transfer or dispatch acknowledgement is not a battle win; combat rewards still need observed outcomes. |
+
+가속 버튼 형태·원거리 지도 연결·도착 전 지원과 실제 방어 승리는 구분해서 검증해야 합니다. 현재 실전 근거는 출발 확인된 사전 배치 1건이며, 가속 효과와 실제 방어 승리는 미검증입니다.
+
+Control recognition, remote map connectivity, timely arrival and actual defense victory require separate validation. Current live evidence establishes one confirmed prepositioning departure; successful live acceleration and defensive victory remain unverified.

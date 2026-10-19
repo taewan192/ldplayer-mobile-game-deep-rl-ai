@@ -18,9 +18,9 @@ python -m unittest discover -s tests -v
 
 This export contains the live-controller test suite. The separate early Arena simulator and its three dedicated test files are excluded. Consequently the repository's test count can differ from an older full-workspace count. Machine-readable execution results are recorded in `validation/source-tests.json` after running the suite from this exported directory.
 
-**2026-10-19 내보낸 소스 검증: 328개 테스트 통과, 실패 0, 오류 0 (23.061초).**
+**2026-10-19 내보낸 소스 검증: 357개 테스트 통과, 실패 0, 오류 0 (22.658초).**
 
-**Export validation on 2026-10-19: 328 tests passed, zero failures, zero errors (23.061 seconds).**
+**Export validation on 2026-10-19: 357 tests passed, zero failures, zero errors (22.658 seconds).**
 
 | 검증 / Check | 무엇을 증명하나요? / What it establishes |
 | --- | --- |
@@ -37,6 +37,18 @@ This export contains the live-controller test suite. The separate early Arena si
 테스트의 모의 전투는 알고리즘 검사용이며 실전 승률에 포함하지 않습니다. 테스트 통과는 무한 루프가 영원히 없거나 모든 상대 공격을 막는다는 증명이 아닙니다.
 
 Synthetic test episodes validate code and are never counted as live performance. Passing tests does not establish the absence of all future loops or guarantee defense against every attack.
+
+## v0.27 현장 검증 / Live verification
+
+이번 업로드 이전의 수정 검증에서 파란 지원창 **56.4M / 27초**, 병력순 도시 목록의 최대 표시값 **81.1G**를 읽었습니다. 실제 **Aunei → Mil 972M 사전 배치 1건**은 출발 행군의 목적지·수량·카운트다운으로 확인했습니다. 도착 완료나 방어 승리로 집계하지 않았습니다.
+
+Before this upload, the release checks read **56.4M / 27 seconds** from the blue support selector and **81.1G** as the largest observed troop-list value. One real **Aunei → Mil prepositioning transfer of 972M** was confirmed by its outgoing destination, quantity and countdown. This establishes departure, not arrival or battle victory.
+
+당시 전체 작업 폴더는 **394개 테스트, 24.640초**로 통과했습니다. 여기에는 배포 대상이 아닌 초기 Arena 테스트도 포함되어 있어, 아래 업로드 소스의 테스트 수와 구분합니다. 요약은 `validation/v0.27-live-verification.json`에 있습니다. 원본 로그·학습 데이터·실행 파일은 포함하지 않습니다.
+
+The historical full-workspace run passed **394 tests in 24.640 seconds**, including the excluded Arena tests. This is separate from the exported-source run above. A sanitized summary is stored in `validation/v0.27-live-verification.json`; raw runtime logs, learned weights and the executable are excluded.
+
+**제한 / Limits:** 가속 처리 경로는 추가했지만 실전 시간 단축은 확인하지 못했습니다. 실제 방어 승리와 모든 원거리 지도 연결도 미검증이며, 연결되지 않는 경로는 보류합니다. / Acceleration code exists, but its successful live effect was not confirmed. Defensive victory and universal remote routing remain unverified; unregistered routes are deferred.
 
 ## B. 보관된 v0.26 설치 검증 / Archived installation audit
 

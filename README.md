@@ -1,6 +1,6 @@
 # LD 플레이어 모바일 게임전용 딥 강화학습 AI
 
-**LDPlayer Mobile Game Deep Reinforcement Learning AI · v0.26**
+**LDPlayer Mobile Game Deep Reinforcement Learning AI · v0.27**
 
 [English](#english) · [한국어](#한국어) · [Algorithm analysis / 알고리즘 분석](docs/ALGORITHMS.md) · [Results / 검증 결과](docs/RESULTS.md)
 
@@ -12,6 +12,17 @@ The full English and Korean descriptions are included below on this page.
 A local Windows deep reinforcement learning project that observes an LDPlayer game through screenshots and OCR, executes verified game skills, and updates its policy from observed outcomes. The current game adapter targets **Million Lords**, including attack selection, troop assembly, defensive reinforcement, and investment review. Training and inference run on the CPU without an external AI API key or GPU.
 
 **Status:** an experimental learning system. A neural policy learns to choose among hand-written, validated skills. It does not discover every game mechanic from scratch or work with arbitrary mobile games without a new adapter. Working training code is not evidence of strong live-game performance.
+
+### v0.27 defense update
+
+- Read blue support-selection bubbles and dark timer text; fix a bubble border being mistaken for a leading digit. The captured failure case now reads **56.4M troops / 27 seconds**.
+- Read the own-city list in troop order, verify donor identity and reserves, and group incoming attacks into separate 30-second arrival windows. A later wave no longer inflates the first deadline's troop goal.
+- Register observed map views before navigating between distant cities. An unconnected route is deferred rather than dispatched using stale coordinates.
+- Count support as dispatched only after an outgoing march matches destination, troop quantity, and countdown. A button click or return to the map is insufficient.
+- Add optional idle prepositioning for nearby priority cities and guarded free/owned-item march acceleration. Both controls are available in the UI. Acceleration requires readable controls and an observed countdown reduction before it is counted as effective; it does not purchase items.
+- Fix defense preemption escaping the recovery handler and stopping the controller. Refresh target troops without requiring unrelated wall/guardian OCR in troop-only focus defense.
+
+**Observed:** one real prepositioning transfer of **972M troops** was confirmed in the outgoing march list. **Not established:** a successful defensive battle, a successful live speedup effect, or working routes to every distant city. Prepositioning is not a combat victory or a combat-learning episode. The Double DQN learning architecture remains unchanged; these changes improve observation, logistics, and execution verification. See [validation evidence](docs/RESULTS.md).
 
 ### Implemented capabilities
 
@@ -131,7 +142,7 @@ The policy network, replay system, and checkpoint format can be reused. Observat
 | `reinforcement.py` | Live observations and hierarchical policy scheduling |
 | `outcomes.py`, `learning.py` | Verified rewards, SQLite history, and retained legacy bandit components |
 | `muster.py`, `batch.py` | Troop assembly and multi-scout execution paths |
-| `defense.py`, `focus_defense.py` | Support, investment conditions, and defensive priorities |
+| `defense.py`, `focus_defense.py`, `defense_logistics.py` | Support, investment conditions, and defensive priorities |
 | `exploration.py`, `recovery.py` | Persisted exploration and game/bridge recovery |
 | `tests/` | Algorithm, workflow, and screen-regression tests |
 
@@ -155,6 +166,17 @@ The repository excludes APKs, original native game binaries, extracted metadata,
 Windows PC에서 LD플레이어의 게임 화면을 캡처하고, 화면·OCR 상태와 실제 행동 결과를 이용해 정책을 갱신하는 로컬 딥 강화학습 프로젝트입니다. 현재 구현된 게임 어댑터는 **Million Lords**이며, 공격 대상 선정, 병력 집결, 방어 지원, 투자 검토를 대상으로 합니다. CPU에서 실행하며 외부 AI API 키나 GPU가 필요하지 않습니다.
 
 **현재 상태:** 학습 가능한 실험적 시스템입니다. 사람이 작성한 게임 조작 기술과 검증 규칙 안에서 신경망이 선택을 학습합니다. 게임 전체를 처음부터 이해하거나, 임의의 모바일 게임에 그대로 적용되는 범용 AI는 아닙니다. 학습 코드가 작동한다는 검증과 높은 실전 승률을 얻었다는 검증은 구분합니다.
+
+### v0.27 방어 업데이트
+
+- 파란 지원 선택창과 어두운 시간 글자를 읽고, 말풍선 테두리를 앞자리 숫자로 오인하던 문제를 수정했습니다. 기존 실패 화면에서 **56.4M 병력 / 27초**를 확인했습니다.
+- 도시 목록을 병력순으로 읽고 지원 성 이름과 잔류량을 확인합니다. 같은 성의 공격도 30초 도착 구간별로 나누어, 나중 공격의 병력을 첫 공격의 기한에 합산하지 않습니다.
+- 실제 관측한 지도 화면의 연결을 확인한 뒤 원거리 지원을 진행합니다. 연결을 확인하지 못한 경로는 보류합니다.
+- 전송 후 목적지·병력·남은 시간이 일치하는 출발 행군이 보여야 지원 출발로 집계합니다. 버튼 클릭이나 지도 복귀만으로 성공 처리하지 않습니다.
+- 대기 중 주변 핵심 성 사전 배치와 무료/보유 아이템 행군 가속 옵션을 UI에 추가했습니다. 가속은 버튼·수량 등 확인 조건을 통과해야 하며, 실제 시간 단축이 관측되어야 효과 적용으로 집계합니다. 아이템을 구매하지 않습니다.
+- 복구 중 방어 알림이 발생하면 자동 플레이가 종료되던 경로를 수정했습니다. 병력 중심 집중 방어에서는 불필요한 성벽·수호자 OCR 때문에 피격 성 확인이 실패하지 않도록 했습니다.
+
+**실제 확인:** 사전 배치 **972M 병력 1건**의 출발 행군을 확인했습니다. **미검증:** 실제 방어 승리, 실전 가속 적용 성공, 모든 원거리 경로 연결. 사전 배치는 전투 승리나 전투 학습 횟수로 세지 않습니다. Double DQN 학습 구조는 유지하며 관측·병력 수송·전송 검증을 보완한 업데이트입니다. [검증 결과](docs/RESULTS.md)를 확인하세요.
 
 ### 무엇을 할 수 있나요?
 

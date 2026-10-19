@@ -1,6 +1,10 @@
 {
-  "version": "0.26",
+  "version": "0.27",
   "files": {
+    "launch_live.py": {
+      "bytes": 66,
+      "sha256": "1e15982346050ae4631e1df135a6ecc1a3f66a87e41a90a721fb2f1426606348"
+    },
     "live_lords/__init__.py": {
       "bytes": 83,
       "sha256": "6cc537b1b7188c29dc502c32abcd2102e9195bb01f836747cb5525e700eb2638"
@@ -18,8 +22,8 @@
       "sha256": "374f9b67f428d1ae405e90ff2edb4e4186206c73b591036513c515072cd19758"
     },
     "live_lords/app.py": {
-      "bytes": 24403,
-      "sha256": "2b228d7b1f6b379de4abd28e4a4602ccadedc21b1839b7c67125978438891a5c"
+      "bytes": 25715,
+      "sha256": "aa87fe286b3c462bb419e3544f336ccb90210bd255c91f3fb91bd042149d00ee"
     },
     "live_lords/assets/attack.png": {
       "bytes": 3294,
@@ -88,6 +92,10 @@
     "live_lords/assets/march_sort.png": {
       "bytes": 3281,
       "sha256": "b07407cb3f0e9638fc3c28620faf97fc456e813478ba471b5dfef8e8d87a883e"
+    },
+    "live_lords/assets/march_speedup_free.png": {
+      "bytes": 2606,
+      "sha256": "b5226f99338d42b5fc0a892c825c8c50b6494e79c09f36245901e9ab9ad990ac"
     },
     "live_lords/assets/march_title_move.png": {
       "bytes": 2832,
@@ -194,8 +202,12 @@
       "sha256": "58d289ffce4585fa90651b091e8ba1e4b456e05612b08d25303c03b2cff7e169"
     },
     "live_lords/defense.py": {
-      "bytes": 42460,
-      "sha256": "96595783eb81387427c94802a5c9420008e5d25db3ff1050528e75dc08cbbdad"
+      "bytes": 43531,
+      "sha256": "e981009b5901354757295b4c1fa090aa5758b2741e2983d3d24ce03dac3c78f3"
+    },
+    "live_lords/defense_logistics.py": {
+      "bytes": 20416,
+      "sha256": "57db40ce53fe1b03eef224a28044ce90f3bf5fbe7cba22824a12237f6c28de67"
     },
     "live_lords/driver.py": {
       "bytes": 13230,
@@ -210,16 +222,16 @@
       "sha256": "790bbdb062c88342dffd25b16eb2576871e103efb03649c40884a0f11a2e91ca"
     },
     "live_lords/focus_defense.py": {
-      "bytes": 8843,
-      "sha256": "f06f769435c0119fdc94d0053f0aacf628a0935c671b2d633522b412d3ba1b47"
+      "bytes": 11662,
+      "sha256": "580dbc4ef1e93d3b38d1aca67120ecc7bfa1bf889b87669f5fc21fd32aaa8eec"
     },
     "live_lords/learning.py": {
       "bytes": 2371,
       "sha256": "edbb4d08bf9ea5a9e62709a142c5a8227e5fa3caee149527b728c2d463d5cbc3"
     },
     "live_lords/muster.py": {
-      "bytes": 40717,
-      "sha256": "81166384007c2ce919ab43e7bb7ac1ce9c13feb1f9c28d113cacb050201172a0"
+      "bytes": 40917,
+      "sha256": "b2935080bb8e9dfea08c671dbab1bffe6c49807c126eb0c23ee581a7c1fb9dd7"
     },
     "live_lords/ocr.ps1": {
       "bytes": 3678,
@@ -246,8 +258,8 @@
       "sha256": "05217ac127738d9faf41fd1a2a53a74d7ff419941764476aa8529e07b7917d5f"
     },
     "live_lords/runner.py": {
-      "bytes": 41157,
-      "sha256": "1b7efb99a245cb13c668d2765fc00ef80fde1d6f8e71ff50415665f70b9021b7"
+      "bytes": 41507,
+      "sha256": "89b03595411c2a5c15df5ac99d1207b1f5d2c5d268708311c0f21dcb2c91a263"
     },
     "live_lords/strategy.py": {
       "bytes": 6416,
@@ -258,8 +270,260 @@
       "sha256": "fc2201f7955c03b0b1bbc994fcfb3f67dc3e4cac08b7d31b778e8095666cabeb"
     },
     "live_lords/vision.py": {
-      "bytes": 47849,
-      "sha256": "97fac07e239e81f29f008a182f5f73460651cc6bbf96704ba06f052c501e3c93"
+      "bytes": 53244,
+      "sha256": "af1dfbf2a1cbd5991d633fe0d5a68ec06c88358a01f8853f785f72216deba0ea"
+    },
+    "tests/fixtures/banner-overlap.png": {
+      "bytes": 1109263,
+      "sha256": "ca57130ba81018fdf4beb929ddb3ccb7adfa2a8b781a56e9432fc0c2d1f323a2"
+    },
+    "tests/fixtures/camera-after.png": {
+      "bytes": 865614,
+      "sha256": "b6367b3fb4e6dfcf90a2275d56e3858b80a5cc7a96d90a91ed277e304b8b692b"
+    },
+    "tests/fixtures/camera-before.png": {
+      "bytes": 898933,
+      "sha256": "bb421fb2f222f1fc5327b7197bb1d54cf31fc3dd7098d34159f3bd66785d5225"
+    },
+    "tests/fixtures/city-interaction-map.png": {
+      "bytes": 1173434,
+      "sha256": "3607dd4b95f66777ad5a9a0b6a1ee76f80756f3aff2e31a39e80164e82aa9a0e"
+    },
+    "tests/fixtures/city-list-troops-v27.png": {
+      "bytes": 545872,
+      "sha256": "523d1e87c477ea300c814e973eedf6b98fe35dde591573ccb0452a48b9dbdbf0"
+    },
+    "tests/fixtures/city88-controls.png": {
+      "bytes": 137961,
+      "sha256": "1e7eb4d01a6c14e98561d564b62164e614ef3c6b09509357a67463e375e9858a"
+    },
+    "tests/fixtures/defense-captain-iqi.png": {
+      "bytes": 357539,
+      "sha256": "e0fff9eb51f1015290c38f566fd8b578cf5f24e9b11d3f192e19a1114e55df5f"
+    },
+    "tests/fixtures/defense-captain-marked.png": {
+      "bytes": 209453,
+      "sha256": "5e9b9dfdf5caf6060b98d93a37c2038583c818be646dae873f161318f418d58b"
+    },
+    "tests/fixtures/deployment-restriction.png": {
+      "bytes": 80511,
+      "sha256": "5382fd3884a15fb733b1c3de436f256c7c623e1e6ba40db0a152e4c2a36a0a06"
+    },
+    "tests/fixtures/enemy-name-ink.png": {
+      "bytes": 4998,
+      "sha256": "0d273a5f08ae7497c4d4f2e0b5dbe75c935389402f153f1f9164e27c3e38e15e"
+    },
+    "tests/fixtures/incoming-defense-list.png": {
+      "bytes": 620606,
+      "sha256": "ee8706b97acc4c28a5b02a82c40b57de66fff1dbfc3e9216476da8f5dda4feee"
+    },
+    "tests/fixtures/incoming-mixed-map-v21.png": {
+      "bytes": 1015534,
+      "sha256": "5b3d22e96577b7b12a1d155b6476ee86fc6aebf0f731f3cc6c58527e843a4714"
+    },
+    "tests/fixtures/incoming-shield-map.png": {
+      "bytes": 1154924,
+      "sha256": "34e951846f5dadcb34c34aa1aa38ce66e621120797b7373bb94cbb4758bd3f74"
+    },
+    "tests/fixtures/mosdynin-reported-touch-v25.png": {
+      "bytes": 46935,
+      "sha256": "b219474feff912fbde9eed059dbc14c4d337be526e60fbd7162d54b0c58c1ce3"
+    },
+    "tests/fixtures/muster-tracking-after.png": {
+      "bytes": 1098984,
+      "sha256": "3dc01317bb5395ec1ea4ae4111e811ac4cdacccbfc88a7168afb264656fb20a1"
+    },
+    "tests/fixtures/muster-tracking-reference.png": {
+      "bytes": 1081466,
+      "sha256": "8f6b8ea3ac9feb5c678cca49e37562f808a07837758b29a24b22953ef9d34051"
+    },
+    "tests/fixtures/ocr-region-0.png": {
+      "bytes": 40057,
+      "sha256": "599b453bd7dbf2238b03c43d228a9ef2a5ebfad9413588c4d4900668f7fbfa6f"
+    },
+    "tests/fixtures/offcenter-enemy-flag-v18.png": {
+      "bytes": 1104011,
+      "sha256": "424be9c09c88c40cb2b169dbd9d0953b304b7116b5118ef8ad019a3cfa9ad0db"
+    },
+    "tests/fixtures/own-aunei-v21.png": {
+      "bytes": 578809,
+      "sha256": "c07b5dbcbbeca6d592483aa13330979acd8d5e894b323fe766a73e8c78f163f7"
+    },
+    "tests/fixtures/own-flags-depth.png": {
+      "bytes": 105372,
+      "sha256": "d9760bb9a89dde1d8f0950c505ae5b1b96bc0956a75162074a569cf927956a35"
+    },
+    "tests/fixtures/own-staging-after-arrival.png": {
+      "bytes": 1149767,
+      "sha256": "9889eb8c44ea1abec4b4d11bf6f6b8d1f79d26e309d1e41be491c2956150f9d8"
+    },
+    "tests/fixtures/owned-main-201g.png": {
+      "bytes": 1088717,
+      "sha256": "1dcedf5f0198b722697e6b493b68d120fa788d24384746f0b2cb7151a9b8fef2"
+    },
+    "tests/fixtures/owned-main-unreadable-army.png": {
+      "bytes": 1052039,
+      "sha256": "b28afc375f0de0a3b0e051d7ecec080067f52d32baa21db396e819b17ff6f02e"
+    },
+    "tests/fixtures/scout-nin-native-v18.png": {
+      "bytes": 586852,
+      "sha256": "95160cd414204e8bf5c324c4f99d4efed7b934728f7a8b229eacd8d3a72de3a4"
+    },
+    "tests/fixtures/sea-after-v18.png": {
+      "bytes": 530196,
+      "sha256": "716e0d55d786a91bef067c56ffcdf087ea1cfbb6053c98b82bf0dbe09c813bbb"
+    },
+    "tests/fixtures/sea-before-v18.png": {
+      "bytes": 530590,
+      "sha256": "90c685b1f0831fec6582671f7dba18a6878fe68924f78df00ab491e4867111e4"
+    },
+    "tests/fixtures/selected-info-only-v22.png": {
+      "bytes": 1055241,
+      "sha256": "62f5b4eaddc544c577ee2caae9c3a982c62574fb381148a1e4c80f964fc18efd"
+    },
+    "tests/fixtures/shore-after-v18.png": {
+      "bytes": 789198,
+      "sha256": "0c006d2e0d7a3a7e7abcf6dbaa8f2e46cc29923018b505bf6fef1063afdc0527"
+    },
+    "tests/fixtures/shore-before-v18.png": {
+      "bytes": 726934,
+      "sha256": "5b55565f7ce10645f4c69fbc9c0e38305b39d3ac9be0dfa0754eaaf06de69240"
+    },
+    "tests/fixtures/static-icon-pan-after-v18.png": {
+      "bytes": 1058453,
+      "sha256": "b4387080c845b7089bfbf13b19d1384e19c410ee7ec2aa93e11fe7101d3a3a42"
+    },
+    "tests/fixtures/static-icon-pan-before-v18.png": {
+      "bytes": 1055240,
+      "sha256": "cb999a3a4f8c130fd86f0d3c516b918f2c8204fe6325375ac538bb6b32955e69"
+    },
+    "tests/fixtures/support-blue-selection-v27.png": {
+      "bytes": 551812,
+      "sha256": "0ee851a6e570546167bfed68702c41d87891a703c0b7ec70dcbe9479853d073e"
+    },
+    "tests/fixtures/sweep-after-wide-pan.png": {
+      "bytes": 1094612,
+      "sha256": "5c796d648392def34354a0e7a557f26a1caaec7088e2885d3173d47eef846c7e"
+    },
+    "tests/fixtures/sweep-before-wide-pan.png": {
+      "bytes": 1095657,
+      "sha256": "2eee2dce454b84fc9547f702fd25f45e8c6b7566f7cd05245a482f7c77cddf20"
+    },
+    "tests/fixtures/water-shader-after-v18.png": {
+      "bytes": 437439,
+      "sha256": "15d01e4cba9385a2bf0916c651f918c7028140bc493e57fe9beedc4d4ac8278e"
+    },
+    "tests/fixtures/water-shader-before-v18.png": {
+      "bytes": 533992,
+      "sha256": "7c68b58d7875328ca741420d2873fa5fbb1312e60cb2c367fb89b214970a1cd0"
+    },
+    "tests/test_adjacent_sources_v18.py": {
+      "bytes": 11946,
+      "sha256": "e36609b98128e00ae5b649aea83b1dd9bfa874340ac022e49624bc8dc9c31a8f"
+    },
+    "tests/test_deep_rl_v26.py": {
+      "bytes": 13443,
+      "sha256": "cc4c7e526cc9a2e87faf649ab1a17ffe6d39410e352cfc440e23496fd7885a2f"
+    },
+    "tests/test_defense_logistics_v27.py": {
+      "bytes": 14955,
+      "sha256": "9ab85ba312e96e5a5c700b9e6e941fcd4227130db9412ccf4f06084b7b54c546"
+    },
+    "tests/test_defense_recovery.py": {
+      "bytes": 7099,
+      "sha256": "5711a7061065ca1a4ed4c69455370ad0a4d02908cb763bccdf9c79b8faa90497"
+    },
+    "tests/test_defense_touch_v25.py": {
+      "bytes": 4891,
+      "sha256": "3fa8032c67b081bca91403790e08dcf4790df20f575ff2de5be9c4145bcb8b0a"
+    },
+    "tests/test_defense_v21.py": {
+      "bytes": 5380,
+      "sha256": "ce799e2a2888af1feb520dff982f19ce70a60c74310f1b244161799e4d77d37a"
+    },
+    "tests/test_focus_defense_v24.py": {
+      "bytes": 8918,
+      "sha256": "5a93a62872285cae844243a64f3bfe824eb725b4bcb989c3f3e27ac9028643b9"
+    },
+    "tests/test_game_recovery.py": {
+      "bytes": 9937,
+      "sha256": "6bdf6b53ac1df7d5879d2e86db0baea47f9416ec5d49edac14039129f71394b3"
+    },
+    "tests/test_incoming_defense.py": {
+      "bytes": 7184,
+      "sha256": "9ecdb47dd00c5b2d08d59003fade4627cf0d260d39fc12c8f3b3ab6180603f07"
+    },
+    "tests/test_live_activity.py": {
+      "bytes": 5633,
+      "sha256": "c25d624c4dc0c4dcd4419633e67f0739b9de0a75de3afa1f9ca1c612934a2c37"
+    },
+    "tests/test_live_attack_path.py": {
+      "bytes": 9968,
+      "sha256": "6492446795a93bb60d50b5eb5ff157be151cbacf63e32349ecb01cd5b3353f50"
+    },
+    "tests/test_live_batch.py": {
+      "bytes": 19071,
+      "sha256": "5cbdf0ddef4140c6a2e264d40fe93003c4f334b17168ec6e8a2d022dc743c660"
+    },
+    "tests/test_live_bulk_exclusions.py": {
+      "bytes": 7178,
+      "sha256": "85c9af0bae0ce745fd8e1830a0b764d3ce00ae72f0996a7bba60789bafb1e901"
+    },
+    "tests/test_live_defense.py": {
+      "bytes": 9291,
+      "sha256": "11e8a55f40e52e82b2e7f3209bf25c4c75bd77482855989dfb20a15d73643195"
+    },
+    "tests/test_live_exploration.py": {
+      "bytes": 5787,
+      "sha256": "e8a3bdddd6cbb4b84e10b7ae80dbf3ecf41fda99e3fbcc16b45f6fe48873a3b2"
+    },
+    "tests/test_live_lords.py": {
+      "bytes": 1994,
+      "sha256": "76f415b52bf43f75ccb94657938423f1351c87d079d06f3066b47da1eee0e20d"
+    },
+    "tests/test_live_muster.py": {
+      "bytes": 6187,
+      "sha256": "12fd32002e1d525124494b1251658e664abf920cddf157b97e8b5ae5ae0bc524"
+    },
+    "tests/test_live_navigation.py": {
+      "bytes": 7277,
+      "sha256": "b192fa112d54f5a877831cdf05c7b5a43d3089207d05a581f609e6fb0b696b57"
+    },
+    "tests/test_live_progress_v18.py": {
+      "bytes": 10288,
+      "sha256": "7810187a30afe4b823b230f659b1b3b3e84838d4e5c59470d987488c62ff460d"
+    },
+    "tests/test_live_scout_loop.py": {
+      "bytes": 5352,
+      "sha256": "3e6d19d66578d28f5a52eeff687dda44bf6a24fa83fff0a16353d395109cc489"
+    },
+    "tests/test_live_speed.py": {
+      "bytes": 3520,
+      "sha256": "635e48045664dd6e2a1930ecd78f63a940b8d5d8c2011cdcc75ecd9208bbde6d"
+    },
+    "tests/test_march_input_guard_v22.py": {
+      "bytes": 2354,
+      "sha256": "595e78c51f66a64b4cd2a9817ec6c334032c19f8c753c18e389e74d97d50f1d8"
+    },
+    "tests/test_muster_workflow.py": {
+      "bytes": 7982,
+      "sha256": "34f2ef182279dd9b461d94d4dd6c7ea35e3f147c98bb3f20c546ec8c3c9f6d19"
+    },
+    "tests/test_outcome_learning.py": {
+      "bytes": 11303,
+      "sha256": "3a7abf4b5fb7aefc4b02b1b7597596363348f12772784639a6b4f54dbd11e4f6"
+    },
+    "tests/test_resource_observation_v18.py": {
+      "bytes": 2627,
+      "sha256": "e8cfb454a2bedd7621d69df762168de054b489abe819b380bf16f4ec7233888d"
+    },
+    "tests/test_stats_v23.py": {
+      "bytes": 4303,
+      "sha256": "4c36f6f18ab1b62aef5c84cba863f1c184cf59a7f3d09901f5e861d679c9fa49"
+    },
+    "tests/test_wide_exploration.py": {
+      "bytes": 9727,
+      "sha256": "797060f8e7bb4fabf1dbb94c8f5e8b8f83edc4173641c017ce1174b8f994e6cb"
     }
   }
 }

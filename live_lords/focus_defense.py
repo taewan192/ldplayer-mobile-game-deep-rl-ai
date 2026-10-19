@@ -37,6 +37,7 @@ class FocusDefenseMixin:
         self.incoming()
         if not self.vision.incoming_button(self.image) and not getattr(self,'defense_read_waiting',False):
             self.check_defense_results()
+            if hasattr(self,'prepare_defense_standby'):self.prepare_defense_standby()
             # Existing attacks are observed only; no new attack is dispatched.
             if self.pending and time.time()>=self.pending['arrival']:self.check_pending()
         if time.time()-getattr(self,'focus_last_hud',0)>=15:
@@ -77,11 +78,15 @@ class FocusDefenseMixin:
         job['threat_basis']='troops_only';job['attack']=None
         buffer=5
         try:
+            if hasattr(self,'refresh_defense_garrison') and not self.refresh_defense_garrison(job):
+                job['status']='unverified';self.save_defenses();return
+            garrison=job.get('garrison_observed',job['before']['troops'])
+            observed_at=job.get('garrison_at',job.get('started',0))
             supplied=sum(m['troops'] for other in self.defenses
                 if city_key(other['staging_name'])==city_key(job['staging_name'])
-                for m in other['moves'] if m['status'] in ('sent','intent') and
-                m.get('arrival',float('inf'))<job['impact']-buffer)
-            needed=max(0,job['troop_goal']-job['before']['troops']-supplied)
+                for m in other['moves'] if m['status']=='sent' and
+                observed_at<m.get('arrival',float('inf'))<job['impact']-buffer)
+            needed=max(0,job['troop_goal']-garrison-supplied)
             job['needed']=needed;self.save_defenses()
             self.ensure_defense_episode(job,choice or decision('defense_blind','troops_only','largest'))
             if not needed:
@@ -90,40 +95,75 @@ class FocusDefenseMixin:
                 return
             self.log(f"집중 방어 {'핵심 성 ' if protected_level(job['before'].get('level')) else ''}{job['staging_name']} · 침입 병력 기준 목표 {pretty(job['troop_goal'])}, 추가 필요 {pretty(needed)} · 공격력 추정 안 함")
             self.map();self.rebase_defense()
-            sources=self.vision.own_sources(self.image,self.state.get('owner'))
+            sources=(self.defense_visible_sources() if hasattr(self,'defense_visible_sources')
+                     else self.vision.own_sources(self.image,self.state.get('owner')))
             order=(lambda s:math.dist(s[0],job['staging'])) if choice and choice['action'].startswith('nearest:') else (lambda s:-s[1])
             job['donors']=[{'position':p,'troops':n} for p,n in sorted(sources,key=order)
                            if math.dist(p,job['staging'])>55]
+            if hasattr(self,'defense_city_inventory'):
+                local=job['donors']
+                inventory=self.defense_city_inventory()
+                self.map();self.rebase_defense()
+                minimum=min(needed*.02,1e8)
+                listed=[{**c,'from_city_list':True} for c in inventory
+                        if city_key(c['name'])!=city_key(job['staging_name']) and c['troops']>=minimum]
+                job['donors']=listed[:4]+[d for d in local if d['troops']>=minimum][:4]
             self.save_defenses()
             for donor in job['donors'][:8]:
                 if not self.defense_support_enabled() or time.time()+15>=job['impact'] or needed<=0:break
+                if donor.get('from_city_list'):
+                    city=self.open_defense_list_donor(job,donor)
+                    if not city:
+                        self.restore_defense_target(job);continue
+                    donor['position']=city['position']
+                else:
+                    if donor.get('position') is None:continue
+                    self.rebase_defense()
+                    city=(self.read_defense_donor(donor['position']) if hasattr(self,'read_defense_donor')
+                          else self.read_owned_details(donor['position']))
                 self.rebase_defense()
-                city=self.read_owned_details(donor['position'])
-                self.rebase_defense()
-                if not city or city_key(city['name']) in self.threatened_names:continue
+                if not city:continue
+                threatened=city_key(city['name']) in self.threatened_names
+                if threatened and not hasattr(self,'defense_donor_capacity'):continue
+                if threatened and not self.defense_snapshot_valid(job):break
                 if any(city_key(m['source'])==city_key(city['name']) for other in self.defenses
                        if other['impact']>time.time() for m in other['moves'] if m['status'] in ('intent','sent')):continue
                 # Keep 90% in another protected castle. Other donors retain 30%.
-                fraction=.1 if protected_level(city.get('level')) else .7
-                requested=min(needed,math.floor(city['troops']*fraction))
+                fraction=.1 if city.get('level') is None or protected_level(city.get('level')) else .7
+                capacity=(self.defense_donor_capacity(city) if hasattr(self,'defense_donor_capacity')
+                          else math.floor(city['troops']*fraction))
+                requested=min(needed,capacity)
                 if requested<=0:continue
+                fraction=min(fraction,capacity/city['troops'])
                 job['support_fraction']=fraction
                 if not self.defense_snapshot_valid(job):
                     self.log('집중 방어 · 공격 구성 변경/종료 · 전송 없이 다시 관측');break
-                if city_key(city['name']) in self.threatened_names:continue
+                if (city_key(city['name']) in self.threatened_names and
+                        (not hasattr(self,'defense_donor_capacity') or self.defense_donor_capacity(city)<requested)):continue
                 self.rebase_defense()
-                p=self.prepare_transfer(donor['position'],requested,job,self.rebase_defense)
+                if donor.get('from_city_list'):
+                    job['strict_destination']=True
+                    p=self.prepare_transfer(donor['position'],requested,job,self.rebase_defense,
+                        navigate_destination=lambda:self.defense_destination_in_view(job))
+                else:p=self.prepare_transfer(donor['position'],requested,job,self.rebase_defense)
                 if not p:continue
                 # The real route, source name, amount and ETA are rechecked at send time.
                 unsafe=(not self.defense_support_enabled() or time.time()-p['observed']>5 or
                     city_key(p['donor']['name'])!=city_key(city['name']) or
-                    time.time()+p['duration']+buffer>=job['impact'] or
+                    (not self.support_arrival_feasible(p['duration'],job['impact']) if hasattr(self,'support_arrival_feasible')
+                     else time.time()+p['duration']+buffer>=job['impact']) or
                     p['troops']>p['donor']['troops']*fraction+1)
                 if unsafe:self.back();self.map();continue
                 move={'source':city['name'],'troops':p['troops'],'arrival':time.time()+p['duration'],
                       'status':'intent','sent_at':time.time(),'reserve_fraction':1-fraction}
                 job['moves'].append(move);self.save_defenses()
                 self.tap(*p['button'],delay=.25)
+                if hasattr(self,'confirm_defense_dispatch'):
+                    if not self.confirm_defense_dispatch(job,move,p):break
+                    self.counts['supports']+=1
+                    if not move.get('late'):needed=max(0,needed-move['troops'])
+                    job['needed']=needed
+                    self.restore_defense_target(job);self.save_defenses();continue
                 if not self.vision.match(self.image,'map_home',.72,area=(0,615,100,720)):
                     self.log('집중 방어 · 지원 결과 미확인 · 같은 병력 전송 반복 안 함');break
                 move['status']='sent';self.counts['supports']+=1

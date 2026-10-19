@@ -12,6 +12,7 @@ from .strategy import StrategyLedger,city_key
 from .vision import pretty
 from .outcomes import bucket,decision
 from .driver import GameUnavailable,EmulatorBridgeUnavailable
+from .defense_logistics import defense_waves
 
 
 class DefenseMixin:
@@ -47,7 +48,11 @@ class DefenseMixin:
         if matrix is None: raise RuntimeError('방어 지도 좌표 재확인 실패. 같은 지원은 반복하지 않습니다.')
         for key in ('staging','target'):
             job[key]=self.vision.transform_point(matrix,job[key])
-        for donor in job.get('donors',[]): donor['position']=self.vision.transform_point(matrix,donor['position'])
+        for donor in job.get('donors',[]):
+            # City-list candidates have a verified name/army but acquire a
+            # screen position only after their pin is opened and registered.
+            if donor.get('position') is not None:
+                donor['position']=self.vision.transform_point(matrix,donor['position'])
         self.image.save(path); self.save_defenses()
 
     def defense_position(self,job):
@@ -203,6 +208,7 @@ class DefenseMixin:
         retained=(getattr(self,'defense_read_waiting',False) and self.vision.march_panel(self.image) and
                   self.vision.defense_tab_selected(self.image))
         if focused and not retained and not self.vision.incoming_button(self.image):
+            if hasattr(self,'reconcile_defense_absence'):self.reconcile_defense_absence(now)
             return self.defense_busy()
         if not retained:self.map()
         try: rows=self.inspect_defense_rows(reuse=True) if retained else self.inspect_defense_rows()
@@ -210,6 +216,8 @@ class DefenseMixin:
             raise  # Let Bot.run enter game/Android recovery, not an OCR retry.
         except RuntimeError as exc:
             return self.defer_defense_read(str(exc))
+        if hasattr(self,'canonical_defense_rows'):rows=self.canonical_defense_rows(rows)
+        self.latest_defense_rows=rows;self.latest_defense_rows_at=time.time()
         uncertain=any(row.get('time_uncertain') for row in rows)
         if not uncertain:
             self.defense_read_waiting=False
@@ -224,14 +232,18 @@ class DefenseMixin:
                 # OCR hold; an outgoing-only list must not renew the hold.
                 self.defense_unknown_until=0
             return self.defense_busy()
+        self.defense_absent_since=None
         self.defense_unknown_until=max(self.defense_unknown_until,now+10)
         self.threatened_names={city_key(r['city']) for r in rows}
         if self.muster: self.cancel_muster('방어 우선')
         # One job per city/wave; all visible attacks are summed, not just the first.
         keys=list(dict.fromkeys(city_key(row['city']) for row in rows))
         if focused:keys.sort(key=lambda key:self.defense_group_priority([r for r in rows if city_key(r['city'])==key]))
+        groups=[]
         for group_key in keys:
-            group=[r for r in rows if city_key(r['city'])==group_key]
+            waves=defense_waves([r for r in rows if city_key(r['city'])==group_key])
+            groups.extend((group_key,wave) for wave in waves)
+        for group_key,group in groups:
             if any(r.get('time_uncertain') for r in group):
                 continue
             impact=min(r['impact'] for r in group)
@@ -269,7 +281,7 @@ class DefenseMixin:
                 self.log(f"{group[0]['city']} 적 공격력 비공개 · 예비병력을 유지하는 제한 지원으로 전환합니다.")
                 self.emit({'alert':'적 병력/공격력이 비공개입니다. 승리를 보장할 수 없는 제한 지원을 검토합니다.'})
             self.map(); current=self.inspect_defense_rows(focus=group_key)
-            target=next((r for r in current if city_key(r['city'])==group_key),None)
+            target=next((r for r in current if city_key(r['city'])==group_key and abs(r['impact']-impact)<30),None)
             if not target: self.map(); continue
             if not self.focus_defense_city(target):
                 self.defense_focus_retry(group,impact,failed=True)
@@ -277,7 +289,8 @@ class DefenseMixin:
             # The observed map-pin action centers its city at (640,330), but
             # camera arrival AND the selected city's name must both be verified.
             self.map(); reference=self.image.copy()
-            city=self.read_owned_details((640,330),target['city'])
+            city=(self.read_focus_defense_target(target) if focused and hasattr(self,'read_focus_defense_target')
+                  else self.read_owned_details((640,330),target['city']))
             if not city:
                 self.defense_focus_retry(group,impact,failed=True)
                 self.defense_unknown_until=max(self.defense_unknown_until,impact+15)
@@ -310,11 +323,14 @@ class DefenseMixin:
         self.map()
         focused=getattr(self,'troop_defense_enabled',lambda:self.config.get('focus_defense',False))()
         rows=self.inspect_defense_rows() if focused else self.inspect_defense_rows(focus=city_key(job['staging_name']))
+        if hasattr(self,'canonical_defense_rows'):rows=self.canonical_defense_rows(rows)
+        self.latest_defense_rows=rows;self.latest_defense_rows_at=time.time()
         self.map()
         if focused:
             if not getattr(self,'defense_list_complete',True):return False
             self.threatened_names.update(city_key(r['city']) for r in rows)
-        current=[r for r in rows if city_key(r['city'])==city_key(job['staging_name'])]
+        current=[r for r in rows if city_key(r['city'])==city_key(job['staging_name']) and
+                 abs(r['impact']-job['impact'])<=30]
         if not current: return False
         signature=sorted((r['attacker'],r['troops']) for r in current)
         expected=sorted(tuple(r) for r in job['fingerprint'])

@@ -1,0 +1,30 @@
+{
+  "version": "0.27",
+  "tests_passed": 394,
+  "tests_seconds": 24.64,
+  "installed_executable_sha256": "7504fa43f0e78e3c19a7fbed20c2586f7bf5fbec18ad5a3870f6d8f252f6d23a",
+  "verified_screen_ocr": {
+    "support_troops": 56400000,
+    "travel_seconds": 27,
+    "city_list_largest": 81100000000
+  },
+  "live_verified": {
+    "kind": "defensive_prepositioning",
+    "source": "Aunei",
+    "destination": "Mil",
+    "troops": 972000000,
+    "confirmation": "outgoing march destination, troops and countdown"
+  },
+  "limitations": {
+    "battle_win_verified": false,
+    "speedup_effect_verified_live": false,
+    "all_remote_routes_verified": false
+  },
+  "notes": [
+    "Private learned model and SQLite database retained.",
+    "Unregistered remote routes are not dispatched.",
+    "No test battles were inserted into live replay."
+  ],
+  "test_scope": "Historical full-workspace suite, including the separate Arena simulator. See source-tests.json for the current exported suite.",
+  "artifact_scope": "Installed executable hash for traceability only; executable and private runtime data are not distributed here."
+}

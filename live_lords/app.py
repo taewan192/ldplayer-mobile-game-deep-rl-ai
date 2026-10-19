@@ -23,7 +23,7 @@ DATA=Path(os.environ.get('LOCALAPPDATA',str(Path.home())))/'MillionLordsAI'
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('Million Lords AI v0.26 · 화면 기반 강화학습')
+        self.title('Million Lords AI v0.27 · 방어 지원 검증')
         self.geometry('1100x810'); self.minsize(930,720)
         self.configure(bg='#101b2b')
         self.columnconfigure(0,weight=1)
@@ -49,6 +49,8 @@ class App(tk.Tk):
         self.upgrade_enabled=tk.BooleanVar(value=True)
         self.defense_margin=tk.DoubleVar(value=1.3)
         self.defense_buffer=tk.IntVar(value=20)
+        self.defense_standby=tk.BooleanVar(value=True)
+        self.defense_acceleration=tk.BooleanVar(value=True)
         self.status=tk.StringVar(value='인스턴스를 선택한 뒤 시작하세요.')
         self.decision=tk.StringVar(value='현재 판단 · 연결 대기')
         self.metrics=tk.StringVar(value='VP —   |   골드 —   |   결과 학습 0 · 기록 0')
@@ -82,10 +84,12 @@ class App(tk.Tk):
         ttk.Label(options,text='방어 우세 / 도착 여유(초)').grid(row=3,column=0,columnspan=2,sticky='w',padx=8)
         ttk.Spinbox(options,textvariable=self.defense_margin,from_=1.1,to=3,increment=.1,width=9).grid(row=3,column=2)
         ttk.Spinbox(options,textvariable=self.defense_buffer,from_=15,to=120,width=9).grid(row=3,column=3)
+        ttk.Checkbutton(options,text='주변 핵심 성 병력 사전 배치',variable=self.defense_standby,command=self.defense_logistics_changed).grid(row=3,column=4,columnspan=2,sticky='w',padx=8)
         ttk.Checkbutton(options,text='AI 자율 판단: 방어·정찰·공격·집결·핵심 성 투자 선택',variable=self.autonomous,command=self.autonomy_changed).grid(row=4,column=0,columnspan=6,sticky='w',padx=8,pady=4)
         ttk.Label(options,text='탐색 속도(배) / 판단 속도(배)').grid(row=5,column=0,columnspan=2,sticky='w',padx=8)
         ttk.Spinbox(options,textvariable=self.exploration_speed,from_=1,to=4,increment=.5,width=9).grid(row=5,column=2)
         ttk.Spinbox(options,textvariable=self.decision_speed,from_=1,to=3,increment=.5,width=9).grid(row=5,column=3)
+        ttk.Checkbutton(options,text='무료/보유 행군 가속 사용',variable=self.defense_acceleration,command=self.defense_logistics_changed).grid(row=5,column=4,columnspan=2,sticky='w',padx=8)
         ttk.Checkbutton(options,text='집중 방어: 새 공격·공격 집결 중단 / Lv.110~115 우선 보호',variable=self.focus_defense,command=self.focus_changed).grid(row=6,column=0,columnspan=6,sticky='w',padx=8,pady=3)
         ttk.Radiobutton(options,text='강화학습하며 플레이',variable=self.learning_mode,value='train',command=self.learning_mode_changed).grid(row=7,column=0,columnspan=2,sticky='w',padx=8)
         ttk.Radiobutton(options,text='저장된 정책으로 플레이 (신경망 고정)',variable=self.learning_mode,value='evaluate',command=self.learning_mode_changed).grid(row=7,column=2,columnspan=4,sticky='w',padx=8)
@@ -159,6 +163,8 @@ class App(tk.Tk):
         try:saved=json.loads((DATA/f'instance-{row[0]}'/'config.json').read_text('utf-8'))
         except (OSError,ValueError):return
         self.focus_defense.set(bool(saved.get('focus_defense',False)))
+        self.defense_standby.set(bool(saved.get('defense_standby_enabled',True)))
+        self.defense_acceleration.set(bool(saved.get('defense_acceleration_enabled',True)))
         if saved.get('learning_mode') in ('train','evaluate'):self.learning_mode.set(saved['learning_mode'])
         interval=saved.get('interval',.25)
         if isinstance(interval,(int,float)) and .25<=interval<=120:self.interval.set(interval)
@@ -182,6 +188,14 @@ class App(tk.Tk):
         temporary.write_text(json.dumps(self.active_config,ensure_ascii=False,indent=2),'utf-8')
         temporary.replace(self.active_directory/'config.json')
         self.log('강화학습 모드: '+('실제 결과로 신경망 갱신' if self.learning_mode.get()=='train' else '저장된 신경망 고정 · 탐험/가중치 갱신 중단'))
+
+    def defense_logistics_changed(self):
+        if not self.active_config:return
+        self.active_config.update(defense_standby_enabled=self.defense_standby.get(),
+                                  defense_acceleration_enabled=self.defense_acceleration.get())
+        temporary=self.active_directory/'config.tmp'
+        temporary.write_text(json.dumps(self.active_config,ensure_ascii=False,indent=2),'utf-8')
+        temporary.replace(self.active_directory/'config.json')
 
     def browse(self):
         selected=filedialog.askdirectory(initialdir=self.install.get())
@@ -215,7 +229,9 @@ class App(tk.Tk):
                 'upgrade_enabled':self.upgrade_enabled.get(),'defense_margin':self.defense_margin.get(),
                 'defense_buffer':self.defense_buffer.get(),'autonomous':self.autonomous.get(),
                 'exploration_speed':self.exploration_speed.get(),'decision_speed':self.decision_speed.get(),
-                'focus_defense':self.focus_defense.get(),'learning_mode':self.learning_mode.get()}
+                'focus_defense':self.focus_defense.get(),'learning_mode':self.learning_mode.get(),
+                'defense_standby_enabled':self.defense_standby.get(),
+                'defense_acceleration_enabled':self.defense_acceleration.get()}
         if config['autonomous']:
             config.update(attack_enabled=True,muster_enabled=True,defense_enabled=True,upgrade_enabled=True)
         if config['focus_defense']:

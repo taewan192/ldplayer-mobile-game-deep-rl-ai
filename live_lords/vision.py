@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import hashlib
+import time
 from collections import OrderedDict
 from pathlib import Path
 
@@ -341,15 +342,15 @@ class Vision:
         return title if any(t in title for t in ('이동','공격','방어','정찰')) else None
 
     def march_button(self,image):
-        area=(1180,510,1280,615)
+        area=(1180,500,1280,655)
         return (self.match(image,'march_defense_button',.82,area=area) or
                 self.match(image,'march_button',.84,area=area) or
                 self.match(image,'march_mixed_button',.86,area=area))
 
     def incoming_button(self,image):
-        shield=self.match(image,'march_defense_button',.82,area=(1180,510,1280,615))
+        shield=self.match(image,'march_defense_button',.82,area=(1180,500,1280,655))
         if shield:return shield
-        mixed=self.match(image,'march_mixed_button',.86,area=(1180,510,1280,615))
+        mixed=self.match(image,'march_mixed_button',.86,area=(1180,500,1280,655))
         if mixed:
             # The mixed swords shortcut includes our outgoing moves. It is
             # incoming only when its observed upper-right red count is present.
@@ -566,6 +567,30 @@ class Vision:
                 result.append((position,troops))
         return result
 
+    def own_sources_batch(self,image,owner):
+        """Read visible garrisons in one OCR batch instead of one call per flag."""
+        if not owner:return []
+        rows=[];boxes={}
+        for cx,cy,scale,_ in self.own_flags(image):
+            position=(cx+round((640-cx)*.07),cy+round(95*scale))
+            if not (135<position[0]<1145 and 120<position[1]<605):continue
+            key='source'+str(len(rows))
+            box=(cx+round(26*scale),cy-round(16*scale),min(1280,cx+round(85*scale)),min(720,cy+round(15*scale)))
+            boxes[key]=box
+            boxes[key+'_wide']=(box[0],box[1],min(1280,cx+round(109*scale)),box[3])
+            boxes[key+'_tight']=(box[0]-1,box[1]-1,box[2]+1,box[3]-4)
+            rows.append((key,position,box))
+        values=self.regions(image,boxes) if boxes else {}
+        result=[]
+        for key,position,box in rows:
+            n=None
+            for variant in (key,key+'_tight',key+'_wide'):
+                value=values.get(variant,'');n=numeric_amount(value)
+                if '.' in value and not re.search(r'[kKmMgGtT]',value):n=None
+                if n is not None:break
+            if n is not None and n>=0:result.append((position,n))
+        return result
+
     def selected_own_city(self,image,owner,require_troops=True):
         self.last_owned_read=None
         button=self.match(image,'move_troops',.84) or self.match(image,'move_troops_city88',.84)
@@ -614,9 +639,13 @@ class Vision:
 
     def troop_bubble_box(self,image):
         a=np.asarray(image.convert('RGB'))[455:540,320:800].astype('int16')
-        yellow=((a[:,:,0]>200)&(a[:,:,1]>130)&(a[:,:,2]<100)).astype('uint8')*255
+        yellow=(a[:,:,0]>200)&(a[:,:,1]>130)&(a[:,:,2]<100)
+        # Friendly support uses a blue bubble with DARK timer glyphs. Attack
+        # uses a yellow bubble. Detect both, not just the attack variant.
+        blue=(a[:,:,2]>140)&(a[:,:,1]>90)&(a[:,:,2]>a[:,:,0]*1.25)
+        mask=cv2.morphologyEx((yellow|blue).astype('uint8')*255,cv2.MORPH_CLOSE,np.ones((3,3),np.uint8))
         boxes=[]
-        for c in cv2.findContours(yellow,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[0]:
+        for c in cv2.findContours(mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[0]:
             x,y,w,h=cv2.boundingRect(c)
             if 75<=w<=185 and 25<=h<=85:boxes.append((x,y,w,h))
         if not boxes:return None
@@ -632,14 +661,19 @@ class Vision:
         crop=np.asarray(image.crop(box).convert('RGB'))
         white=(crop.min(axis=2)>185)&((crop.max(axis=2)-crop.min(axis=2))<65)
         clean=Image.fromarray(np.where(white,0,255).astype('uint8'))
-        return march_countdown(self.regions(clean,{'troop_eta':(0,0,clean.width,clean.height)})['troop_eta'])
+        value=march_countdown(self.regions(clean,{'troop_eta':(0,0,clean.width,clean.height)})['troop_eta'])
+        if value is not None:return value
+        # The blue friendly-transfer timer is dark navy, not white.
+        dark=(crop[:,:,0]<65)&(crop[:,:,1]<120)&(crop[:,:,2]<155)
+        clean=Image.fromarray(np.where(dark,0,255).astype('uint8'))
+        return march_countdown(self.regions(clean,{'troop_eta_dark':(0,0,clean.width,clean.height)})['troop_eta_dark'])
 
     def troop_selection_amount(self,image):
         """Read just the numeric row of the yellow army/ETA bubble."""
         bubble=self.troop_bubble_box(image)
         if not bubble:return None
         x,y,w,h=bubble
-        box=(x+6,y+2,x+w-26,min(y+30,540))
+        box=(x+9,y+4,x+w-26,min(y+30,540))
         raw=self.regions(image,{'selection_number':box})['selection_number']
         value=amount(raw)
         if value is not None:return value
@@ -647,6 +681,67 @@ class Vision:
         white=(crop.min(axis=2)>185)&((crop.max(axis=2)-crop.min(axis=2))<65)
         clean=Image.fromarray(np.where(white,0,255).astype('uint8'))
         return amount(self.regions(clean,{'selection_number':(0,0,clean.width,clean.height)})['selection_number'])
+
+    def city_list_army(self,image,y):
+        from .defense_logistics import explicit_army
+        box=(491,y-16,569,y+16)
+        crop=np.asarray(image.crop(box).convert('RGB'))
+        white=(crop.min(axis=2)>175)&((crop.max(axis=2)-crop.min(axis=2))<65)
+        clean=Image.fromarray(np.where(white,0,255).astype('uint8'))
+        text=self.regions(clean,{'list_army_ink':(0,0,clean.width,clean.height)})['list_army_ink']
+        return explicit_army(text)
+
+    def outgoing_support_rows(self,image):
+        from PIL import ImageDraw
+        from .defense_logistics import explicit_army
+        work=image.copy();result=[];observed=time.time()
+        for _ in range(6):
+            pin=self.match(work,'march_pin',.85,area=(620,100,685,650))
+            if not pin:break
+            x,y=pin[:2]
+            fields=self.regions(image,{'support_city':(x-165,y-21,x-31,y+17),
+                                       'support_troops':(x+35,y-21,x+129,y+30),
+                                       'support_time':(x-430,y-2,x-350,y+31)})
+            troops=explicit_army(fields['support_troops']);remaining=march_countdown(fields['support_time'])
+            if troops is not None and remaining is not None and fields['support_city'].strip():
+                result.append({'city':fields['support_city'].strip(),'troops':troops,'remaining':remaining,'pin':(x,y),'row':y,'observed':observed})
+            ImageDraw.Draw(work).rectangle((620,y-36,685,y+36),fill=(0,0,0))
+        return result
+
+    def labeled_controls(self,image,box):
+        """OCR-backed controls; coordinates come from observed text, not guesses."""
+        path=self.data/'ocr-controls.png';image.crop(box).save(path)
+        result=self.ocr.read(path,'ko');controls=[]
+        for line in result.get('lines',[]):
+            words=line.get('words',[])
+            if not words:continue
+            left=min(w['x'] for w in words);right=max(w['x']+w['w'] for w in words)
+            top=min(w['y'] for w in words);bottom=max(w['y']+w['h'] for w in words)
+            controls.append({'text':line['text'],'point':(round(box[0]+(left+right)/2),round(box[1]+(top+bottom)/2))})
+        return controls
+
+    def march_acceleration_button(self,image,row):
+        marker=self.match(image,'march_speedup_free',.9,area=(275,max(95,row-35),360,min(660,row+40)))
+        if marker:return marker
+        marker=self.match(image,'march_speedup',.9,area=(200,max(95,row-35),1080,min(660,row+40)))
+        if marker:return marker
+        for control in self.labeled_controls(image,(200,max(95,row-35),1080,min(660,row+40))):
+            if ''.join(control['text'].split()) in ('가속','Speedup','SpeedUp'):
+                return (*control['point'],1.)
+        return None
+
+    def acceleration_option(self,image):
+        controls=self.labeled_controls(image,(200,100,1080,650))
+        texts=[c['text'] for c in controls];joined=' '.join(texts)
+        if '가속' not in joined or any(t in joined for t in ('₩','KRW','구매','결제','다이아')):return None
+        if not re.search(r'보유\s*[:：]?\s*[1-9]\d*',joined):return None
+        after=None
+        for text in texts:
+            match=re.search(r'(?:가속\s*후|적용\s*후)\s*[:：]?\s*(.+)',text)
+            if match:after=march_countdown(match[1])
+        buttons=[c for c in controls if ''.join(c['text'].split()) in ('사용','적용')]
+        if after is None or len(buttons)!=1:return None
+        return {'remaining_after':after,'button':buttons[0]['point']}
 
     def same_viewport(self,image,reference):
         """Validate terrain alignment so old city coordinates cannot be used after a pan."""

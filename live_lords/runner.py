@@ -22,6 +22,7 @@ from .adaptive import AdaptiveMixin
 from .batch import BatchMixin
 from .focus_defense import FocusDefenseMixin
 from .reinforcement import ReinforcementMixin
+from .defense_logistics import DefenseLogisticsMixin
 
 
 class Stopped(Exception): pass
@@ -33,7 +34,7 @@ class DefensePreempted(Exception): pass
 class NavigationBlocked(RuntimeError): pass
 
 
-class Bot(ReinforcementMixin,FocusDefenseMixin,GameRecoveryMixin,ActivityMixin,DefenseMixin,MusterMixin,AdaptiveMixin,BatchMixin):
+class Bot(DefenseLogisticsMixin,ReinforcementMixin,FocusDefenseMixin,GameRecoveryMixin,ActivityMixin,DefenseMixin,MusterMixin,AdaptiveMixin,BatchMixin):
     def __init__(self,config,data,stop,emit):
         self.config,self.data,self.stop,self.emit=config,Path(data),stop,emit
         self.driver=LDPlayer(Path(config['install']),config['name'],self.data)
@@ -688,7 +689,10 @@ class Bot(ReinforcementMixin,FocusDefenseMixin,GameRecoveryMixin,ActivityMixin,D
                     if self.recover_navigation(exc):
                         recovery_failures=0
                         self.decide('화면 복구 완료','지도에서 진행 중인 행군을 확인한 뒤 판단 재개')
-                        self.wait(1)
+                        # wait() may raise DefensePreempted. Inside this except
+                        # handler that exception escapes the loop and kills the
+                        # worker with an empty error. Poll again next iteration.
+                        self.recovery_pause(1)
                     else:
                         recovery_failures+=1
                         delay=min(30,2**min(recovery_failures,5))
@@ -698,7 +702,7 @@ class Bot(ReinforcementMixin,FocusDefenseMixin,GameRecoveryMixin,ActivityMixin,D
                         self.recovery_pause(delay)
         except Stopped: self.log('중지됨. 학습 기록 저장 완료')
         except Exception as exc:
-            self.log('자동 조작 중단: '+str(exc))
+            self.log('자동 조작 중단: '+type(exc).__name__+': '+str(exc))
             self.emit({'error':str(exc)})
         finally:
             self.learner.close()
